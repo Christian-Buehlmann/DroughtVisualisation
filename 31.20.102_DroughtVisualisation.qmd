@@ -9,7 +9,9 @@ editor: visual
 #| echo: false
 install.packages("tidyverse")
 install.packages("rio")
-install_formats()
+install.packages('shades')
+install.packages('tinter')
+# install_formats() # ne se charge pas 
 
 
 
@@ -21,7 +23,8 @@ install_formats()
 
 library(tidyverse)
 library(rio)
-
+library (shades)
+library (tinter)
 
 
 ```
@@ -72,11 +75,386 @@ ggplot(
 
 ```{r}
 
-ddm_perc_cat_hubs <- import("https://data.rfortherestofus.com/dm_perc_cat_hubs.json")
-southwest_2003 <- dm_perc_cat_hubs %>%
-  filter(hub == "Southwest") %>%
-  filter(year == 2003)
+# ddm_perc_cat_hubs <- import("https://data.rfortherestofus.com/dm_perc_cat_hubs.json")
+# southwest_2003 <- ddm_perc_cat_hubs %>%
+#   filter(hub == "Southwest") %>%
+#   filter(year == 2003)
 
-southwest_2003
+ggplot(
+  data = southwest_2003,
+  aes(
+    x = week,
+    y = percentage,
+    fill = category
+  )
+) +
+  geom_col()  +
+  scale_fill_viridis_d(
+    option = "rocket",
+    direction = -1
+  )
+
 
 ```
+```{r}
+
+ggplot(
+  data = southwest_2003,
+  aes(
+    x = week,
+    y = percentage,
+    fill = category
+  )
+) +
+  geom_col() +
+  scale_fill_viridis_d(
+    option = "rocket",
+    direction = -1
+  ) +
+  scale_x_continuous(
+    name = NULL,
+    guide = "none"
+  ) +
+  scale_y_continuous(
+    name = NULL,
+    labels = NULL,
+    position = "right"
+  )
+
+```
+```{r}
+dm_perc_cat_hubs %>%
+  filter(hub %in% c(
+    "Northwest",
+    "California",
+    "Southwest",
+    "Northern Plains"
+  )) %>%
+  ggplot(aes(
+    x = week,
+    y = percentage,
+    fill = category
+  )) +
+  geom_col() +
+  scale_fill_viridis_d(
+    option = "rocket",
+    direction = -1
+  ) +
+  scale_x_continuous(
+    name = NULL,
+    guide = "none"
+  ) +
+  scale_y_continuous(
+    name = NULL,
+    labels = NULL,
+    position = "right"
+  ) +
+  facet_grid(
+    rows = vars(year),
+    cols = vars(hub),
+    switch = "y"
+  ) +
+  theme_light(base_family = "Roboto")
+
+dm_perc_cat_hubs %>%
+  filter(hub %in% c(
+    "Northwest",
+    "California",
+    "Southwest",
+    "Northern Plains"
+  )) %>%
+  ggplot(aes(
+    x = week,
+    y = percentage,
+    fill = category
+  ))  +
+  geom_rect(
+    aes(
+      xmin = .5,
+      xmax = max_week + .5,
+      ymin = -0.005,
+      ymax = 1
+    ),
+    fill = "#f4f4f9",
+    color = NA,
+    size = 0.4
+  )  +
+  geom_col() +
+  scale_fill_viridis_d(
+    option = "rocket",
+    direction = -1
+  ) +
+  scale_x_continuous(
+    name = NULL,
+    guide = "none"
+  ) +
+  scale_y_continuous(
+    name = NULL,
+    labels = NULL,
+    position = "right"
+  ) +
+  facet_grid(
+    rows = vars(year),
+    cols = vars(hub),
+    switch = "y"
+  ) +
+  theme_light(base_family = "Roboto")
+
+```
+```{r}
+dm_perc_cat_hubs %>%
+  filter(hub %in% c(
+    "Northwest",
+    "California",
+    "Southwest",
+    "Northern Plains"
+  )) %>%
+  ggplot(aes(
+    x = week,
+    y = percentage,
+    fill = category
+  )) +
+  geom_rect(                             # grise l'arrière-plan des grapiques individuels
+    aes(
+      xmin = .5,
+      xmax = max_week + .5,
+      ymin = -0.005,
+      ymax = 1
+    ),
+    fill = "#f4f4f9",
+    color = NA,
+    size = 0.4
+  ) +
+  geom_col() +
+  scale_fill_viridis_d(
+    option = "rocket",
+    direction = -1
+  ) +
+  scale_x_continuous(
+    name = NULL,
+    guide = "none"
+  ) +
+  scale_y_continuous(
+    name = NULL,
+    labels = NULL,
+    position = "right"
+  ) +
+  facet_grid(
+    rows = vars(year),
+    cols = vars(hub),
+    switch = "y"
+  ) + #legends
+scale_fill_viridis_d(
+    option = "rocket",
+    name = "Category:",
+    direction = -1,
+    begin = .17,
+    end = .97,
+    labels = c(
+      "Abnormally Dry",
+      "Moderate Drought",
+      "Severe Drought",
+      "Extreme Drought",
+      "Exceptional Drought"
+    )
+  ) +
+  theme_light(base_family = "Roboto") +
+  theme(
+    axis.title = element_text(
+      size = 14,
+      color = "black"
+    ),
+    axis.text = element_text(
+      family = "Roboto Mono",
+      size = 11
+    ),
+    axis.line.x = element_blank(),
+    axis.line.y = element_line(
+      color = "black",
+      size = .2
+    ),
+    axis.ticks.y = element_line(
+      color = "black",
+      size = .2
+    ),
+    axis.ticks.length.y = unit(2, "mm"),
+    legend.position = "top",
+    legend.title = element_text(
+      color = "#2DAADA",
+      face = "bold"
+    ),
+    legend.text = element_text(color = "#2DAADA"),
+    strip.text.x = element_text(
+      hjust = .5,
+      face = "plain",
+      color = "black",
+      margin = margin(t = 20, b = 5)
+    ),
+    strip.text.y.left = element_text(
+      angle = 0,
+      vjust = .5,
+      face = "plain",
+      color = "black"
+    ),
+    strip.background = element_rect(
+      fill = "transparent",
+      color = "transparent"
+    ),
+    panel.grid.minor = element_blank(), # Enlève les axes
+    panel.grid.major = element_blank(), # Enlève les axes
+    panel.spacing.x = unit(0.3, "lines"),
+    panel.spacing.y = unit(0.25, "lines"),
+    panel.background = element_rect(
+      fill = "transparent",
+      color = "transparent"
+    ),
+    panel.border = element_rect(
+      color = "transparent",
+      size = 0
+    ),
+    plot.background = element_rect(
+      fill = "transparent",
+      color = "transparent",
+      size = .4
+    ),
+    plot.margin = margin(rep(18, 4))
+  )
+
+```
+```{r}
+ggplot(dm_perc_cat_hubs, aes(week, percentage)) +
+  geom_rect(
+    aes(
+      xmin = .5,
+      xmax = max_week + .5,
+      ymin = -0.005,
+      ymax = 1
+    ),
+    fill = "#f4f4f9",
+    color = NA,
+    size = 0.4,
+    show.legend = FALSE
+  ) +
+  geom_col(
+    aes(
+      fill = category,
+      fill = after_scale(addmix(
+        darken(
+          fill,
+          .05,
+          space = "HLS"
+        ),
+        "#d8005a",
+        .15
+      )),
+      color = after_scale(darken(
+        fill,
+        .2,
+        space = "HLS"
+      ))
+    ),
+    width = .9,
+    size = 0.12
+  ) +
+  facet_grid(
+    rows = vars(year),
+    cols = vars(hub),
+    switch = "y"
+  ) +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(
+    expand = c(.02, .02),
+    guide = "none",
+    name = NULL
+  ) +
+  scale_y_continuous(
+    expand = c(0, 0),
+    position = "right",
+    labels = NULL,
+    name = NULL
+  ) +
+#legends
+scale_fill_viridis_d(
+    alpha = 1,
+    option = "rocket",
+    name = "Category:",
+    direction = -1,
+    begin = .17,
+    end = .97
+  ) +
+  guides(fill = guide_legend(
+    nrow = 2,
+    override.aes = list(size = 1)
+  )) +
+  theme_light(
+    base_size = 18,
+    base_family = "Roboto"
+  ) +
+  theme(
+    axis.title = element_text(
+      size = 14,
+      color = "black"
+    ),
+    axis.text = element_text(
+      family = "Roboto Mono",
+      size = 11
+    ),
+    axis.line.x = element_blank(),
+    axis.line.y = element_line(
+      color = "black",
+      size = .2
+    ),
+    axis.ticks.y = element_line(
+      color = "black",
+      size = .2
+    ),
+    axis.ticks.length.y = unit(2, "mm"),
+    legend.position = "top",
+    legend.title = element_text(
+      color = "#2DAADA",
+      size = 18,
+      face = "bold"
+    ),
+    legend.text = element_text(
+      color = "#2DAADA",
+      size = 16
+    ),
+    strip.text.x = element_text(
+      size = 16,
+      hjust = .5,
+      face = "plain",
+      color = "black",
+      margin = margin(t = 20, b = 5)
+    ),
+    strip.text.y.left = element_text(
+      size = 18,
+      angle = 0,
+      vjust = .5,
+      face = "plain",
+      color = "black"
+    ),
+    strip.background = element_rect(
+      fill = "transparent",
+      color = "transparent"
+    ),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.spacing.x = unit(0.3, "lines"),
+    panel.spacing.y = unit(0.25, "lines"),
+    panel.background = element_rect(
+      fill = "transparent",
+      color = "transparent"
+    ),
+    panel.border = element_rect(
+      color = "transparent",
+      size = 0
+    ),
+    plot.background = element_rect(
+      fill = "transparent",
+      color = "transparent",
+      size = .4
+    ),
+    plot.margin = margin(rep(18, 4))
+  )
+```
+
