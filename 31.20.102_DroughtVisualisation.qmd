@@ -1,0 +1,82 @@
+---
+title: "31.20.102_DroughtVisalisation"
+author: "Christian Bühlmann"
+format: html
+editor: visual
+---
+
+```{r}
+#| echo: false
+install.packages("tidyverse")
+install.packages("rio")
+install_formats()
+
+
+
+
+```
+
+```{r}
+#| echo: false
+
+library(tidyverse)
+library(rio)
+
+
+
+```
+
+
+```{r GetData}
+#| echo: false
+gapminder_10_rows <- read_csv("https://data.rfortherestofus.com/gapminder_10_rows.csv")
+
+
+```
+
+
+```{r}
+
+#| echo: false
+
+ggplot(
+  data = gapminder_10_rows,
+  mapping = aes(
+    x = year,
+    y = lifeExp,
+    fill = year
+  ) 
+) +
+  geom_point() +
+  geom_line() +
+  geom_col()  +
+  scale_fill_viridis_c()+
+  theme_minimal()
+
+ggplot(
+  data = gapminder_10_rows,
+  mapping = aes(
+    x = year,
+    y = lifeExp,
+    fill = year
+  ) 
+) +
+  geom_point() +
+  geom_line() +
+  geom_col()  +
+  scale_fill_viridis_c()
+
+
+```
+
+
+```{r}
+
+ddm_perc_cat_hubs <- import("https://data.rfortherestofus.com/dm_perc_cat_hubs.json")
+southwest_2003 <- dm_perc_cat_hubs %>%
+  filter(hub == "Southwest") %>%
+  filter(year == 2003)
+
+southwest_2003
+
+```
