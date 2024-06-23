@@ -1,0 +1,38 @@
+---
+title: "Custom Data Visualization Themes"
+output: html_notebook
+---
+
+
+```{r}
+install.packages("palmerpenguins")
+install.packages("remotes")
+
+library(remotes)
+install_github("bbc/bbplot")
+library(palmerpenguins)
+library(tidyverse)
+library(bbplot)
+```
+
+```{r}
+
+penguins_summary <- penguins %>%
+  count(island)
+
+penguins_plot <- ggplot(
+  data = penguins_summary,
+  aes(
+    x = island,
+    y = n,
+    fill = island
+  )
+) +
+  geom_col() +
+  labs(
+    title = "Number of Penguins",
+    subtitle = "Islands are in Antarctica",
+    caption = "Data from palmerpenguins package"
+  )
+penguins_plot
+```
